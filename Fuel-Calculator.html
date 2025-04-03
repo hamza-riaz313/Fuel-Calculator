@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Quantity Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        input, select {
+            margin: 10px;
+            padding: 10px;
+            font-size: 18px;
+            width: 200px;
+        }
+        button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Fuel Quantity Calculator</h2>
+        
+        <label>Select Fuel Type: </label>
+        <select id="fuelType" onchange="updateRate()">
+            <option value="petrol">Petrol</option>
+            <option value="diesel">Diesel</option>
+        </select><br>
+        
+        <label>Petrol Rate (Rs per liter): </label>
+        <input type="number" id="petrolRate" placeholder="Enter petrol rate" oninput="saveRates()"><br>
+        
+        <label>Diesel Rate (Rs per liter): </label>
+        <input type="number" id="dieselRate" placeholder="Enter diesel rate" oninput="saveRates()"><br>
+        
+        <label>Amount (Rs): </label>
+        <input type="number" id="amount" placeholder="Enter amount" oninput="calculateQuantity()"><br>
+        
+        <label>Quantity (Liters): </label>
+        <input type="number" id="quantityInput" placeholder="Enter quantity" oninput="calculateAmount()"><br>
+        
+        <h3>Calculated Quantity: <span id="quantity">0</span> Liters</h3>
+        
+        <button onclick="resetFields()">Reset</button>
+    </div>
+    
+    <script>
+        // Check if rates are saved in localStorage
+        window.onload = function() {
+            let savedPetrolRate = localStorage.getItem('petrolRate');
+            let savedDieselRate = localStorage.getItem('dieselRate');
+            
+            if (savedPetrolRate) {
+                document.getElementById('petrolRate').value = savedPetrolRate;
+            }
+            if (savedDieselRate) {
+                document.getElementById('dieselRate').value = savedDieselRate;
+            }
+            updateRate();
+        };
+
+        function saveRates() {
+            let petrolRate = document.getElementById('petrolRate').value;
+            let dieselRate = document.getElementById('dieselRate').value;
+
+            // Save rates to localStorage
+            localStorage.setItem('petrolRate', petrolRate);
+            localStorage.setItem('dieselRate', dieselRate);
+
+            updateRate();
+        }
+
+        function updateRate() {
+            let fuelType = document.getElementById('fuelType').value;
+            let rate = fuelType === 'petrol' ? parseFloat(document.getElementById('petrolRate').value) || 1 
+                                              : parseFloat(document.getElementById('dieselRate').value) || 1;
+            document.getElementById('rate').value = rate;
+            calculateQuantity();
+        }
+
+        function calculateQuantity() {
+            let amount = parseFloat(document.getElementById('amount').value) || 0;
+            let fuelType = document.getElementById('fuelType').value;
+            let rate = fuelType === 'petrol' ? parseFloat(document.getElementById('petrolRate').value) || 1 
+                                              : parseFloat(document.getElementById('dieselRate').value) || 1;
+            let quantity = amount / rate;
+            document.getElementById('quantity').innerText = quantity.toFixed(2);
+        }
+        
+        function calculateAmount() {
+            let quantity = parseFloat(document.getElementById('quantityInput').value) || 0;
+            let fuelType = document.getElementById('fuelType').value;
+            let rate = fuelType === 'petrol' ? parseFloat(document.getElementById('petrolRate').value) || 1 
+                                              : parseFloat(document.getElementById('dieselRate').value) || 1;
+            let amount = quantity * rate;
+            document.getElementById('amount').value = amount.toFixed(2);
+            document.getElementById('quantity').innerText = quantity.toFixed(2);
+        }
+        
+        function resetFields() {
+            document.getElementById('fuelType').value = "petrol";
+            document.getElementById('petrolRate').value = "1";
+            document.getElementById('dieselRate').value = "1";
+            document.getElementById('amount').value = "";
+            document.getElementById('quantityInput').value = "";
+            document.getElementById('quantity').innerText = "0";
+
+            // Reset the saved rates in localStorage
+            localStorage.removeItem('petrolRate');
+            localStorage.removeItem('dieselRate');
+        }
+    </script>
+</body>
+</html>
